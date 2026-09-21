@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>我的日曆</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <h1>我的日曆</h1>
+    <button id="settingsBtn" class="icon-btn" aria-label="設定" title="設定">⚙︎</button>
+  </div>
+
+  <div class="month-nav">
+    <button id="prevMonthBtn" class="icon-btn" aria-label="上個月">‹</button>
+    <div class="month-nav-controls">
+      <span id="monthLabel"></span>
+    </div>
+    <div class="month-nav-controls">
+      <button id="todayBtn" class="icon-btn" aria-label="今天" title="回到今天">•</button>
+      <button id="nextMonthBtn" class="icon-btn" aria-label="下個月">›</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--work-bg);border:1px solid var(--border)"></span>上班日</span>
+    <span><span class="dot" style="background:var(--holiday-bg);border:1px solid var(--border)"></span>國定假日</span>
+    <span><span class="dot dot--overtime"></span>加班</span>
+    <span><span class="dot dot--event"></span>重大事件</span>
+    <span><span class="dot dot--task"></span>任務</span>
+    <span><span class="dot dot--dividend"></span>除權息</span>
+    <span><span class="dot dot--card"></span>信用卡繳款</span>
+  </div>
+
+  <div id="calendarGrid" class="calendar-grid"></div>
+</div>
+
+<!-- 單日編輯視窗 -->
+<div id="dayModal" class="modal">
+  <div class="modal-sheet">
+    <h2 id="modalDateLabel"></h2>
+    <div id="modalWorkStatus" class="modal-sub"></div>
+
+    <div class="field field-checkbox">
+      <input type="checkbox" id="inputOvertime" />
+      <label for="inputOvertime" style="margin:0">今天加班</label>
+    </div>
+    <div class="field">
+      <label for="inputMajorEvent">重大事件（例如：Fed FOMC 會議、WWDC）</label>
+      <input type="text" id="inputMajorEvent" placeholder="輸入事件名稱" />
+    </div>
+    <div class="field">
+      <label for="inputTask">當天任務</label>
+      <input type="text" id="inputTask" placeholder="輸入任務內容" />
+    </div>
+    <div class="field">
+      <label for="inputDividend">股市除權息</label>
+      <input type="text" id="inputDividend" placeholder="例如：2330 除息" />
+    </div>
+    <div class="field">
+      <label for="inputNote">備註</label>
+      <input type="text" id="inputNote" placeholder="其他備註" />
+    </div>
+
+    <div class="modal-actions">
+      <button id="modalCancelBtn" class="btn btn-secondary">取消</button>
+      <button id="modalSaveBtn" class="btn btn-primary">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 設定視窗 -->
+<div id="settingsModal" class="modal">
+  <div class="modal-sheet">
+    <h2>班表設定</h2>
+    <div class="modal-sub">用「做幾休幾」自動產生上班日，改一次設定全部套用</div>
+
+    <div class="field">
+      <label for="settingRotationStart">班表起始日（此日為上班第一天）</label>
+      <input type="date" id="settingRotationStart" />
+    </div>
+    <div class="field">
+      <label for="settingWorkDays">連續上班天數</label>
+      <input type="number" id="settingWorkDays" min="0" />
+    </div>
+    <div class="field">
+      <label for="settingOffDays">連續休假天數</label>
+      <input type="number" id="settingOffDays" min="0" />
+    </div>
+    <div class="field">
+      <label for="settingCreditCardDay">信用卡每月繳款日（幾號）</label>
+      <input type="number" id="settingCreditCardDay" min="1" max="31" />
+    </div>
+
+    <div class="modal-actions">
+      <button id="settingsCancelBtn" class="btn btn-secondary">取消</button>
+      <button id="settingsSaveBtn" class="btn btn-primary">儲存</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/holidays.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
