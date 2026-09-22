@@ -8,6 +8,7 @@
   --work-bg: #eaf4ff;
   --off-bg: #ffffff;
   --holiday-bg: #f3ecff;
+  --holiday: #af52de;
   --overtime: #ff9500;
   --event: #ff3b30;
   --task: #34c759;
@@ -187,6 +188,7 @@ body {
 }
 
 .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.dot--holiday { background: var(--holiday); }
 .dot--overtime { background: var(--overtime); }
 .dot--event { background: var(--event); }
 .dot--task { background: var(--task); }

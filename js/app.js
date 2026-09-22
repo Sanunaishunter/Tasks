@@ -131,7 +131,8 @@ function renderGrid() {
     const holiday = TW_HOLIDAYS[dateStr];
     const work = isWorkday(dateStr);
     cell.classList.add(work ? "day-cell--work" : "day-cell--off");
-    if (holiday) cell.classList.add("day-cell--holiday");
+    // 上班日以上班底色為主，假日只用點點標示，避免蓋掉「今天要上班」的資訊
+    if (holiday && !work) cell.classList.add("day-cell--holiday");
 
     const ev = getEvent(dateStr);
 
@@ -162,6 +163,7 @@ function renderGrid() {
 
     const dots = document.createElement("div");
     dots.className = "day-dots";
+    if (holiday) dots.appendChild(makeDot("dot--holiday", `國定假日：${holiday}`));
     if (ev.overtime) dots.appendChild(makeDot("dot--overtime", "加班"));
     if (ev.majorEvent) dots.appendChild(makeDot("dot--event", `重大事件：${ev.majorEvent}`));
     if (ev.task) dots.appendChild(makeDot("dot--task", `任務：${ev.task}`));
