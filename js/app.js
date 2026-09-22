@@ -1,7 +1,7 @@
 const STORAGE_KEY = "tasks-calendar-v1";
 
 const DEFAULT_SETTINGS = {
-  rotationStart: todayStr(),
+  rotationStart: "2026-09-23", // 9/22 休、9/23-24 上班，做二休二循環
   workDays: 2,
   offDays: 2,
   creditCardDay: 15,
