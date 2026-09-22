@@ -109,6 +109,12 @@ body {
 }
 .legend span { display: inline-flex; align-items: center; gap: 4px; }
 
+.hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: -4px 4px 12px;
+}
+
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -160,6 +166,18 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.day-preview {
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1.15;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.day-preview--event { color: var(--event); }
+.day-preview--task { color: var(--task); }
 
 .day-dots {
   margin-top: auto;

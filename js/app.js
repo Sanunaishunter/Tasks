@@ -147,12 +147,25 @@ function renderGrid() {
       cell.appendChild(h);
     }
 
+    if (ev.majorEvent) {
+      const e = document.createElement("div");
+      e.className = "day-preview day-preview--event";
+      e.textContent = ev.majorEvent;
+      cell.appendChild(e);
+    }
+    if (ev.task) {
+      const t = document.createElement("div");
+      t.className = "day-preview day-preview--task";
+      t.textContent = ev.task;
+      cell.appendChild(t);
+    }
+
     const dots = document.createElement("div");
     dots.className = "day-dots";
     if (ev.overtime) dots.appendChild(makeDot("dot--overtime", "加班"));
-    if (ev.majorEvent) dots.appendChild(makeDot("dot--event", "重大事件"));
-    if (ev.task) dots.appendChild(makeDot("dot--task", "任務"));
-    if (ev.dividend) dots.appendChild(makeDot("dot--dividend", "除權息"));
+    if (ev.majorEvent) dots.appendChild(makeDot("dot--event", `重大事件：${ev.majorEvent}`));
+    if (ev.task) dots.appendChild(makeDot("dot--task", `任務：${ev.task}`));
+    if (ev.dividend) dots.appendChild(makeDot("dot--dividend", `除權息：${ev.dividend}`));
     if (isCreditCardDay(dateStr)) dots.appendChild(makeDot("dot--card", "信用卡繳款"));
     cell.appendChild(dots);
 
