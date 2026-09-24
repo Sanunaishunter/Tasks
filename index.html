@@ -53,8 +53,12 @@
       <input type="text" id="inputMajorEvent" placeholder="輸入事件名稱" />
     </div>
     <div class="field">
-      <label for="inputTask">當天任務</label>
-      <input type="text" id="inputTask" placeholder="輸入任務內容" />
+      <label>當天任務</label>
+      <ul id="taskList" class="task-list"></ul>
+      <div class="task-add-row">
+        <input type="text" id="newTaskInput" placeholder="輸入任務內容，Enter 快速新增" />
+        <button type="button" id="addTaskBtn" class="btn-add">新增</button>
+      </div>
     </div>
     <div class="field">
       <label for="inputDividend">股市除權息</label>

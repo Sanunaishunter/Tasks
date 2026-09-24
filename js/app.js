@@ -65,7 +65,16 @@ function isCreditCardDay(dateStr) {
 }
 
 function getEvent(dateStr) {
-  return state.events[dateStr] || {};
+  const ev = state.events[dateStr] || {};
+  // 舊版資料是單一 task 字串，轉成清單格式方便沿用
+  if (ev.task && !ev.tasks) {
+    return { ...ev, tasks: [{ id: uid(), text: ev.task, done: false }], task: undefined };
+  }
+  return ev;
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
 function setEvent(dateStr, patch) {
@@ -73,6 +82,7 @@ function setEvent(dateStr, patch) {
   // 清掉空值，避免資料越存越肥
   Object.keys(cur).forEach((k) => {
     if (cur[k] === "" || cur[k] === false || cur[k] == null) delete cur[k];
+    else if (Array.isArray(cur[k]) && cur[k].length === 0) delete cur[k];
   });
   if (Object.keys(cur).length === 0) {
     delete state.events[dateStr];
@@ -154,10 +164,12 @@ function renderGrid() {
       e.textContent = ev.majorEvent;
       cell.appendChild(e);
     }
-    if (ev.task) {
+    if (ev.tasks && ev.tasks.length) {
       const t = document.createElement("div");
       t.className = "day-preview day-preview--task";
-      t.textContent = ev.task;
+      t.textContent = ev.tasks.length > 1
+        ? `${ev.tasks[0].text} 等${ev.tasks.length}項`
+        : ev.tasks[0].text;
       cell.appendChild(t);
     }
 
@@ -166,7 +178,10 @@ function renderGrid() {
     if (holiday) dots.appendChild(makeDot("dot--holiday", `國定假日：${holiday}`));
     if (ev.overtime) dots.appendChild(makeDot("dot--overtime", "加班"));
     if (ev.majorEvent) dots.appendChild(makeDot("dot--event", `重大事件：${ev.majorEvent}`));
-    if (ev.task) dots.appendChild(makeDot("dot--task", `任務：${ev.task}`));
+    if (ev.tasks && ev.tasks.length) {
+      const doneCount = ev.tasks.filter((t) => t.done).length;
+      dots.appendChild(makeDot("dot--task", `任務（${doneCount}/${ev.tasks.length} 完成）：${ev.tasks.map((t) => t.text).join("、")}`));
+    }
     if (ev.dividend) dots.appendChild(makeDot("dot--dividend", `除權息：${ev.dividend}`));
     if (isCreditCardDay(dateStr)) dots.appendChild(makeDot("dot--card", "信用卡繳款"));
     cell.appendChild(dots);
@@ -183,6 +198,8 @@ function makeDot(cls, title) {
   return d;
 }
 
+let modalTasks = [];
+
 function openDayModal(dateStr) {
   const ev = getEvent(dateStr);
   const modal = document.getElementById("dayModal");
@@ -195,9 +212,12 @@ function openDayModal(dateStr) {
 
   document.getElementById("inputOvertime").checked = !!ev.overtime;
   document.getElementById("inputMajorEvent").value = ev.majorEvent || "";
-  document.getElementById("inputTask").value = ev.task || "";
   document.getElementById("inputDividend").value = ev.dividend || "";
   document.getElementById("inputNote").value = ev.note || "";
+
+  modalTasks = (ev.tasks || []).map((t) => ({ ...t }));
+  document.getElementById("newTaskInput").value = "";
+  renderModalTasks();
 
   modal.dataset.date = dateStr;
   modal.classList.add("open");
@@ -207,13 +227,59 @@ function closeDayModal() {
   document.getElementById("dayModal").classList.remove("open");
 }
 
+function renderModalTasks() {
+  const list = document.getElementById("taskList");
+  list.innerHTML = "";
+  modalTasks.forEach((t) => {
+    const row = document.createElement("li");
+    row.className = "task-row";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = !!t.done;
+    checkbox.addEventListener("change", () => {
+      t.done = checkbox.checked;
+      renderModalTasks();
+    });
+
+    const label = document.createElement("span");
+    label.className = "task-text" + (t.done ? " task-text--done" : "");
+    label.textContent = t.text;
+
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "task-del";
+    del.setAttribute("aria-label", "刪除任務");
+    del.textContent = "✕";
+    del.addEventListener("click", () => {
+      modalTasks = modalTasks.filter((x) => x.id !== t.id);
+      renderModalTasks();
+    });
+
+    row.appendChild(checkbox);
+    row.appendChild(label);
+    row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+
+function addModalTask() {
+  const input = document.getElementById("newTaskInput");
+  const text = input.value.trim();
+  if (!text) return;
+  modalTasks.push({ id: uid(), text, done: false });
+  input.value = "";
+  renderModalTasks();
+  input.focus();
+}
+
 function saveDayModal() {
   const modal = document.getElementById("dayModal");
   const dateStr = modal.dataset.date;
   setEvent(dateStr, {
     overtime: document.getElementById("inputOvertime").checked,
     majorEvent: document.getElementById("inputMajorEvent").value.trim(),
-    task: document.getElementById("inputTask").value.trim(),
+    tasks: modalTasks,
     dividend: document.getElementById("inputDividend").value.trim(),
     note: document.getElementById("inputNote").value.trim(),
   });
@@ -270,6 +336,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("modalCancelBtn").addEventListener("click", closeDayModal);
   document.getElementById("modalSaveBtn").addEventListener("click", saveDayModal);
+
+  document.getElementById("addTaskBtn").addEventListener("click", addModalTask);
+  document.getElementById("newTaskInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addModalTask();
+    }
+  });
 
   render();
 });
